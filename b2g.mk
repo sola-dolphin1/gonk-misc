@@ -13,6 +13,7 @@ PRODUCT_PACKAGES += \
 	killer \
 	rilproxy \
 	sources.xml \
+	MTLmr3m.ttf \
 	$(NULL)
 
 ifeq ($(ENABLE_DEFAULT_BOOTANIMATION),true)
