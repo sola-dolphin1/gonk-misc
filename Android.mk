@@ -163,22 +163,22 @@ PRELOAD_LIBS := -Dlibmozglue.so
 endif
 endif
 
-$(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz $(APRIORI) $(PRELINK_MAP)
-	@echo Install dir: $(TARGET_OUT)/b2g
-
-ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
-	mv $(TARGET_OUT)/b2g/webapps $(TARGET_OUT)
+GAIA_PATH ?= $(abspath $(LOCAL_PATH)/../gaia)
+ifeq (,$(wildcard $(GAIA_PATH)))
+$(error GAIA_PATH is not defined)
 endif
 
 # Preserve the /system/b2g/distribution/ directory as its contents are not
 # populated as a part of this rule, and may even be populated before this
 # rule executes
-	rm -rf $(filter-out $(TARGET_OUT)/b2g/distribution,$(wildcard $(TARGET_OUT)/b2g/*))
-	mkdir -p $(TARGET_OUT)/b2g
-
+PRESERVE_DIRS := distribution
 ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
-	mv $(TARGET_OUT)/webapps $(TARGET_OUT)/b2g
+PRESERVE_DIRS += webapps
 endif
+$(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz $(APRIORI) $(PRELINK_MAP)
+	@echo Install dir: $(TARGET_OUT)/b2g
+
+	rm -rf $(filter-out $(addprefix $(TARGET_OUT)/b2g/,$(PRESERVE_DIRS)),$(wildcard $(TARGET_OUT)/b2g/*))
 
 	mkdir -p $(TARGET_OUT)/b2g/defaults/pref
 	cp -r $(GAIA_PATH)/profile/defaults/* $(TARGET_OUT)/b2g/defaults/
